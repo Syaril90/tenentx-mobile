@@ -1,4 +1,4 @@
-import { Complaint } from '../types';
+import { Complaint } from '../../../types';
 export const mockComplaints: Complaint[] = [
   {
     id: 'c1',
