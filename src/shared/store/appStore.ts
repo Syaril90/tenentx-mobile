@@ -31,8 +31,14 @@ import {
   createComplaintsSlice,
 } from '../../features/complaints/store/complaintsSlice';
 
+// profile
+import {
+  ProfileSlice,
+  createProfileSlice,
+} from '../../features/profile/store/profileSlice';
+
 // ---- Compose the global store ----
-export type AppStore = DashboardSlice & PaymentsSlice & PayNowSlice & AnnSlice & ComplaintsSlice;
+export type AppStore = DashboardSlice & PaymentsSlice & PayNowSlice & AnnSlice & ComplaintsSlice & ProfileSlice;
 
 export const useAppStore = create<AppStore>()(
   devtools((...a) => ({
@@ -41,5 +47,6 @@ export const useAppStore = create<AppStore>()(
     ...createPayNowSlice(...a),
     ...createAnnouncementsSlice(...a),
     ...createComplaintsSlice(...a),
+    ...createProfileSlice(...a),
   })),
 );
