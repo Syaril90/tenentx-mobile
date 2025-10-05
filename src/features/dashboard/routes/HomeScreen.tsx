@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
@@ -13,6 +14,8 @@ import AnnouncementsCarousel from '../ui/partials/AnnouncementsCarousel';
 import QuickActionsGrid from '../ui/partials/QuickActionsGrid';
 
 export default function HomeScreen() {
+  const router = useRouter();
+
   const me = useAppStore((s) => s.me);
   const unit = useAppStore((s) => s.unit);
   const balance = useAppStore((s) => s.balance);
@@ -74,7 +77,12 @@ export default function HomeScreen() {
 
         <QuickActionsGrid
           items={[
-            { key: 'pay', label: 'Pay Now', icon: 'credit-card-outline', onPress: () => {} },
+            {
+              key: 'facility',
+              label: 'Facility Booking',
+              icon: 'calendar-clock',
+              onPress: () => router.push('/facilities'),
+            },
             { key: 'visitor', label: 'Register Visitor', icon: 'account-plus-outline', onPress: () => {} },
             { key: 'complaint', label: 'New Complaint', icon: 'file-document-edit', onPress: () => {} },
             { key: 'history', label: 'Payment History', icon: 'history', onPress: () => {} },

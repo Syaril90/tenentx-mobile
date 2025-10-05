@@ -1,60 +1,71 @@
+import { StateCreator } from 'zustand';
+import { ComplaintsRepos } from '../services/factory';
 import type { Complaint } from '../types';
 
-export const mockComplaints: Complaint[] = [
-  {
-    id: 'c1',
-    title: 'Plumbing Issue',
-    description: 'Leaking faucet in the bathroom, constant dripping...',
-    createdAtISO: '2023-12-12T10:12:00Z',
-    status: 'in_progress',
-    category: 'facility',
-    location: 'my_unit',
-    attachments: [
-      'https://picsum.photos/seed/pipe1/400/300',
-      'https://picsum.photos/seed/pipe2/400/300',
-    ],
-    preferredResolution: 'morning',
-    preferredAtISO: null,
-  },
-  {
-    id: 'c2',
-    title: 'Noise Complaint',
-    description: 'Loud music from upstairs unit late at night...',
-    createdAtISO: '2023-12-11T22:42:00Z',
-    status: 'new',
-    category: 'noise',
-    location: 'common_area',
-    locationNote: 'Lobby',
-    attachments: [],
-    preferredResolution: 'anytime',
-    preferredAtISO: null,
-  },
-  {
-    id: 'c3',
-    title: 'Broken Light Fixture',
-    description: 'Hallway light outside my unit is flickering.',
-    createdAtISO: '2023-12-05T08:30:00Z',
-    status: 'resolved',
-    category: 'facility',
-    location: 'common_area',
-    locationNote: 'Level 12 corridor',
-    attachments: ['https://picsum.photos/seed/light1/400/300'],
-    preferredResolution: 'afternoon',
-    preferredAtISO: null,
-  },
-  {
-    id: 'c4',
-    title: 'Parking Spot Dispute',
-    description: 'Another vehicle is parked in my assigned spot.',
-    createdAtISO: '2023-12-02T15:05:00Z',
-    status: 'on_hold',
-    category: 'other',
-    location: 'common_area',
-    locationNote: 'Basement B2',
-    attachments: [],
-    preferredResolution: 'anytime',
-    preferredAtISO: null,
-  },
-];
+export type SortBy = 'date_desc' | 'date_asc';
+export type StatusFilter = Complaint['status'] | 'all';
 
-export const delay = (ms = 250) => new Promise<void>((r) => setTimeout(r, ms));
+export type ComplaintsState = {
+  complaints: Complaint[];
+  complaintsLoading: boolean;
+  complaintsError?: string;
+
+  // UI filters
+  query: string;
+  statusFilter: StatusFilter;
+  sortBy: SortBy;
+};
+
+export type ComplaintsActions = {
+  loadComplaints(): Promise<void>;
+  setQuery(q: string): void;
+  setStatusFilter(s: StatusFilter): void;
+  setSort(v: SortBy): void;
+};
+
+export type ComplaintsSlice = ComplaintsState & ComplaintsActions;
+
+export const createComplaintsSlice: StateCreator<
+  ComplaintsSlice,
+  [['zustand/devtools', never]],
+  [],
+  ComplaintsSlice
+> = (set) => ({
+  complaints: [],
+  complaintsLoading: false,
+  complaintsError: undefined,
+
+  query: '',
+  statusFilter: 'all',
+  sortBy: 'date_desc',
+
+  async loadComplaints() {
+    set({ complaintsLoading: true, complaintsError: undefined });
+    try {
+      const repo = ComplaintsRepos.complaints();
+      const list = await repo.list();
+      // keep most recent first by default (UI can re-sort)
+      const sorted = [...list].sort((a, b) =>
+        b.createdAtISO.localeCompare(a.createdAtISO)
+      );
+      set({ complaints: sorted, complaintsLoading: false });
+    } catch (e) {
+      set({
+        complaintsError: 'Failed to load complaints',
+        complaintsLoading: false,
+      });
+    }
+  },
+
+  setQuery(q) {
+    set({ query: q });
+  },
+
+  setStatusFilter(s) {
+    set({ statusFilter: s });
+  },
+
+  setSort(v) {
+    set({ sortBy: v });
+  },
+});
