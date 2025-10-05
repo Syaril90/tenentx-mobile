@@ -5,6 +5,7 @@ import { Appbar, FAB, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAppStore } from '../../../shared/store/appStore';
+import { Complaint } from '../types';
 import ComplaintCard from '../ui/components/ComplaintCard';
 import ComplaintsFilters from '../ui/partials/ComplaintsFilters';
 
@@ -32,14 +33,14 @@ export default function ComplaintsScreen() {
   const data = useMemo(() => {
     const q = query.trim().toLowerCase();
     return complaints
-      .filter((c) => (statusFilter === 'all' ? true : c.status === statusFilter))
+      .filter((c: Complaint) => (statusFilter === 'all' ? true : c.status === statusFilter))
       .filter(
-        (c) =>
+        (c : Complaint) =>
           !q ||
           c.title.toLowerCase().includes(q) ||
           c.description.toLowerCase().includes(q)
       )
-      .sort((a, b) =>
+      .sort((a: Complaint, b: Complaint) =>
         sortBy === 'date_desc'
           ? b.createdAtISO.localeCompare(a.createdAtISO)
           : a.createdAtISO.localeCompare(b.createdAtISO)
@@ -60,11 +61,13 @@ export default function ComplaintsScreen() {
         onRefresh={() => void loadComplaints()}
         contentContainerStyle={{ padding: 16, paddingBottom: 100, gap: 12 }}
         renderItem={({ item }) => (
-          <ComplaintCard item={item} onPress={() => {/* TODO: router.push(`/complaints/${item.id}`) */}} />
+          <ComplaintCard
+            item={item}
+            onPress={() => router.push(`/complaints/${item.id}`)}
+          />
         )}
         ListHeaderComponent={
           <ComplaintsFilters
-            // map to your filter component API
             q={query}
             onChangeQ={setQuery}
             status={statusFilter}

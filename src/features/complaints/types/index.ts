@@ -24,3 +24,19 @@ export type CreateComplaintInput = {
   preferredResolution: NonNullable<Complaint['preferredResolution']>;
   preferredAtISO?: string | null;
 };
+
+export type ChatSender = 'user' | 'staff' | 'system';
+
+export type ChatMessage = {
+  id: string;
+  complaintId: string;
+  sender: ChatSender;
+  text: string;
+  createdAtISO: string;
+  attachmentUrls?: string[];
+};
+
+export type ChatThread = {
+  complaintId: string;
+  messages: ChatMessage[];
+};
