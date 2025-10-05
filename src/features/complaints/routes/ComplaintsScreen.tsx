@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import React, { useEffect, useMemo } from 'react';
 import { FlatList, View } from 'react-native';
 import { Appbar, FAB, Text } from 'react-native-paper';
@@ -8,36 +9,48 @@ import ComplaintCard from '../ui/components/ComplaintCard';
 import ComplaintsFilters from '../ui/partials/ComplaintsFilters';
 
 export default function ComplaintsScreen() {
+  const router = useRouter();
+
+  // store
   const complaints = useAppStore((s) => s.complaints);
   const loading = useAppStore((s) => s.complaintsLoading);
   const loadComplaints = useAppStore((s) => s.loadComplaints);
 
-  const filters = useAppStore((s) => s.filters);
+  const query = useAppStore((s) => s.query);
   const setQuery = useAppStore((s) => s.setQuery);
-  const setStatus = useAppStore((s) => s.setStatus);
-  const toggleSort = useAppStore((s) => s.toggleSort);
 
-  useEffect(() => { void loadComplaints(); }, [loadComplaints]);
+  const statusFilter = useAppStore((s) => s.statusFilter);
+  const setStatusFilter = useAppStore((s) => s.setStatusFilter);
+
+  const sortBy = useAppStore((s) => s.sortBy); // 'date_desc' | 'date_asc'
+  const setSort = useAppStore((s) => s.setSort);
+
+  useEffect(() => {
+    void loadComplaints();
+  }, [loadComplaints]);
 
   const data = useMemo(() => {
-    const q = filters.q.trim().toLowerCase();
-    const filtered = complaints
-      .filter((c) => (filters.status === 'all' ? true : c.status === filters.status))
-      .filter((c) => !q || c.title.toLowerCase().includes(q) || c.description.toLowerCase().includes(q))
+    const q = query.trim().toLowerCase();
+    return complaints
+      .filter((c) => (statusFilter === 'all' ? true : c.status === statusFilter))
+      .filter(
+        (c) =>
+          !q ||
+          c.title.toLowerCase().includes(q) ||
+          c.description.toLowerCase().includes(q)
+      )
       .sort((a, b) =>
-        filters.sortByDate === 'desc'
+        sortBy === 'date_desc'
           ? b.createdAtISO.localeCompare(a.createdAtISO)
           : a.createdAtISO.localeCompare(b.createdAtISO)
       );
-    return filtered;
-  }, [complaints, filters]);
+  }, [complaints, query, statusFilter, sortBy]);
 
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: '#f8f9fc' }}>
       <Appbar.Header mode="small" style={{ backgroundColor: '#f8f9fc' }} statusBarHeight={0}>
-        <Appbar.BackAction onPress={() => { /* router.back() if needed */ }} />
+        <Appbar.BackAction onPress={() => router.back()} />
         <Appbar.Content title="My Complaints" />
-        <Appbar.Action icon="plus-circle-outline" onPress={() => { /* go to create screen */ }} />
       </Appbar.Header>
 
       <FlatList
@@ -46,15 +59,18 @@ export default function ComplaintsScreen() {
         refreshing={loading}
         onRefresh={() => void loadComplaints()}
         contentContainerStyle={{ padding: 16, paddingBottom: 100, gap: 12 }}
-        renderItem={({ item }) => <ComplaintCard item={item} onPress={() => { /* go to details */ }} />}
+        renderItem={({ item }) => (
+          <ComplaintCard item={item} onPress={() => {/* TODO: router.push(`/complaints/${item.id}`) */}} />
+        )}
         ListHeaderComponent={
           <ComplaintsFilters
-            q={filters.q}
+            // map to your filter component API
+            q={query}
             onChangeQ={setQuery}
-            status={filters.status}
-            onChangeStatus={setStatus}
-            sortByDate={filters.sortByDate}
-            onToggleSort={toggleSort}
+            status={statusFilter}
+            onChangeStatus={setStatusFilter}
+            sortByDate={sortBy === 'date_desc' ? 'desc' : 'asc'}
+            onToggleSort={() => setSort(sortBy === 'date_desc' ? 'date_asc' : 'date_desc')}
           />
         }
         ListEmptyComponent={
@@ -69,7 +85,11 @@ export default function ComplaintsScreen() {
         }
       />
 
-      <FAB icon="plus" style={{ position: 'absolute', right: 16, bottom: 24 }} onPress={() => { /* create */ }} />
+      <FAB
+        icon="plus"
+        style={{ position: 'absolute', right: 16, bottom: 24 }}
+        onPress={() => router.push('/complaints/new')}
+      />
     </SafeAreaView>
   );
 }

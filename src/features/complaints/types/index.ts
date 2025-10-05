@@ -3,13 +3,24 @@ export type ComplaintStatus = 'new' | 'in_progress' | 'on_hold' | 'resolved';
 export type Complaint = {
   id: string;
   title: string;
-  description: string;
+  description: string;      // full body
+  createdAtISO: string;
   status: ComplaintStatus;
-  createdAtISO: string; // e.g. "2024-01-15"
+  category?: 'facility' | 'security' | 'noise' | 'cleanliness' | 'other';
+  location?: 'my_unit' | 'common_area';
+  locationNote?: string;    // e.g., "Gym"
+  attachments?: string[];   // URIs
+  preferredResolution?: 'anytime' | 'morning' | 'afternoon' | 'specific';
+  preferredAtISO?: string | null;
 };
 
-export type ComplaintFilters = {
-  q: string;                  // search query
-  status: 'all' | ComplaintStatus;
-  sortByDate: 'desc' | 'asc'; // "By Date" chip
+export type CreateComplaintInput = {
+  title: string;
+  description: string;
+  category: NonNullable<Complaint['category']>;
+  location: NonNullable<Complaint['location']>;
+  locationNote?: string;
+  attachments?: string[];
+  preferredResolution: NonNullable<Complaint['preferredResolution']>;
+  preferredAtISO?: string | null;
 };

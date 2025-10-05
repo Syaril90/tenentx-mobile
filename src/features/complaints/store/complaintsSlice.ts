@@ -1,41 +1,69 @@
-import { StateCreator } from 'zustand';
+import type { StateCreator } from 'zustand';
 import { ComplaintsRepos } from '../services/factory';
-import type { Complaint, ComplaintFilters, ComplaintStatus } from '../types';
+import type { Complaint, ComplaintStatus, CreateComplaintInput } from '../types';
 
-export type ComplaintsSlice = {
+export type ComplaintsState = {
   complaints: Complaint[];
   complaintsLoading: boolean;
   complaintsError?: string;
 
-  filters: ComplaintFilters;
+  creating: boolean;
 
-  loadComplaints(): Promise<void>;
-  setQuery(q: string): void;
-  setStatus(s: 'all' | ComplaintStatus): void;
-  toggleSort(): void;
+  query: string;
+  statusFilter: ComplaintStatus | 'all';
+  sortBy: 'date_desc' | 'date_asc';
 };
+
+export type ComplaintsActions = {
+  loadComplaints(): Promise<void>;
+  createComplaint(input: CreateComplaintInput): Promise<Complaint>;
+  setQuery(q: string): void;
+  setStatusFilter(s: ComplaintsState['statusFilter']): void;
+  setSort(sort: ComplaintsState['sortBy']): void;
+};
+
+export type ComplaintsSlice = ComplaintsState & ComplaintsActions;
 
 export const createComplaintsSlice: StateCreator<
   ComplaintsSlice,
   [['zustand/devtools', never]],
   [],
   ComplaintsSlice
-> = (set) => ({
+> = (set, get) => ({
   complaints: [],
   complaintsLoading: false,
-  filters: { q: '', status: 'all', sortByDate: 'desc' },
+  creating: false,
+  query: '',
+  statusFilter: 'all',
+  sortBy: 'date_desc',
 
   async loadComplaints() {
     set({ complaintsLoading: true, complaintsError: undefined });
     try {
-      const items = await ComplaintsRepos.complaints().list();
-      set({ complaints: items, complaintsLoading: false });
+      const repo = ComplaintsRepos.complaints();
+      const data = await repo.list();
+      set({ complaints: data, complaintsLoading: false });
     } catch {
       set({ complaintsLoading: false, complaintsError: 'Failed to load complaints' });
     }
   },
 
-  setQuery(q) { set((s) => ({ filters: { ...s.filters, q } })); },
-  setStatus(status) { set((s) => ({ filters: { ...s.filters, status } })); },
-  toggleSort() { set((s) => ({ filters: { ...s.filters, sortByDate: s.filters.sortByDate === 'desc' ? 'asc' : 'desc' } })); },
+  async createComplaint(input) {
+    set({ creating: true });
+    try {
+      const repo = ComplaintsRepos.complaints();
+      const created = await repo.create(input);
+      // optimistic add to list
+      const current = get().complaints;
+      set({ complaints: [created, ...current], creating: false });
+      return created;
+    } catch (e) {
+      set({ creating: false });
+      throw e;
+    }
+  },
+
+  setQuery(q) { set({ query: q }); },
+  setStatusFilter(s) { set({ statusFilter: s }); },
+  setSort(sort) { set({ sortBy: sort }); },
 });
