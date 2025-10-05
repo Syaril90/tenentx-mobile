@@ -55,7 +55,7 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="annouce"
+        name="announce"
         options={{
           title: 'Announce',
           tabBarIcon: ({ color, size }) => (

@@ -1,10 +1,19 @@
+// src/features/announcements/services/adapters/mock/fixtures.ts
 import { Announcement } from '../../../types';
 
 export const mockAnnouncements: Announcement[] = [
   {
     id: 'a1',
     title: 'Urgent: Water Shutdown - Block B',
-    body: 'Water supply will be interrupted due to valve replacement.',
+    body: [
+      'Dear Residents,',
+      'Please be advised that water supply to Block B will be temporarily interrupted due to a scheduled valve replacement by our maintenance contractor.',
+      'Date: Friday, October 27, 2023',
+      'Time: 9:00 AM – 3:00 PM',
+      'During this period, please store enough water for essential use (drinking, cooking, and sanitation). The maintenance team will attempt to restore service earlier if work completes ahead of schedule.',
+      'We apologize for the inconvenience and appreciate your understanding.',
+      'Building Management',
+    ].join('\n\n'),
     category: 'maintenance',
     createdAtISO: '2023-10-26T10:00:00Z',
     imageUrl:
@@ -15,7 +24,15 @@ export const mockAnnouncements: Announcement[] = [
   {
     id: 'a2',
     title: 'Annual General Meeting Reminder',
-    body: 'Don’t forget our AGM next week. See agenda attached.',
+    body: [
+      'Hello Residents,',
+      'A reminder that our Annual General Meeting (AGM) will be held next week. We will review the previous year’s financials, discuss the proposed budget, and vote on key initiatives for 2024.',
+      'Date: Thursday, November 2, 2023',
+      'Time: 7:00 PM – 9:00 PM',
+      'Venue: Function Room, Ground Floor',
+      'The agenda and supporting documents have been shared via email. Light refreshments will be provided. Your participation is important—please attend and make your voice heard.',
+      'Thank you,\nManagement Committee',
+    ].join('\n\n'),
     category: 'events',
     createdAtISO: '2023-10-25T08:00:00Z',
     imageUrl:
@@ -26,7 +43,14 @@ export const mockAnnouncements: Announcement[] = [
   {
     id: 'a3',
     title: 'Gym Renovation Update',
-    body: 'Gym closed Nov 1–15. We apologize for the inconvenience.',
+    body: [
+      'Dear Residents,',
+      'The gym will undergo essential renovations to upgrade flooring and replace select equipment. The facility will be closed during the renovation window.',
+      'Closure Dates: November 1 – November 15, 2023',
+      'Upgrades include: new free-weight area, improved ventilation, and additional stretch zone. Access to the outdoor fitness corner remains available.',
+      'We appreciate your patience as we enhance the amenities for everyone.',
+      'Regards,\nFacilities Team',
+    ].join('\n\n'),
     category: 'maintenance',
     createdAtISO: '2023-10-26T10:00:00Z',
     imageUrl:
@@ -36,7 +60,15 @@ export const mockAnnouncements: Announcement[] = [
   {
     id: 'a4',
     title: 'Community BBQ Invitation',
-    body: 'Join us for food, games, and fun this Saturday!',
+    body: [
+      'Hi Neighbors!',
+      'Join us this Saturday for a community BBQ—food, games, and good company. Families and friends welcome!',
+      'Date: Saturday, October 28, 2023',
+      'Time: 4:00 PM – 7:00 PM',
+      'Location: Poolside Deck',
+      'Bring your picnic blankets; we’ll handle the grills and beverages. See you there!',
+      '— Social Committee',
+    ].join('\n\n'),
     category: 'events',
     createdAtISO: '2023-10-25T15:30:00Z',
     read: true,
@@ -44,7 +76,13 @@ export const mockAnnouncements: Announcement[] = [
   {
     id: 'a5',
     title: 'Parking Policy Change',
-    body: 'Visitor parking policy updated from Nov 1. Register at front desk.',
+    body: [
+      'Attention All Residents,',
+      'Please note an update to our visitor parking policy effective November 1, 2023. All visitor vehicles must be registered at the front desk upon entry and display a temporary permit on the dashboard.',
+      'Visitors are limited to 4 hours between 8:00 AM and 10:00 PM. Overnight parking requires prior approval from management.',
+      'These measures aim to ensure fair access and safety within the car park. Thank you for your cooperation.',
+      'Management Office',
+    ].join('\n\n'),
     category: 'notices',
     createdAtISO: '2023-10-24T09:00:00Z',
     read: true,

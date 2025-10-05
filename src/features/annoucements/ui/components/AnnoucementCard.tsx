@@ -1,7 +1,7 @@
 import React from 'react';
 import { ImageBackground, View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
-import { Announcement } from '../../types';
+import type { Announcement } from '../../types';
 
 type Props = {
   item: Announcement;
@@ -9,9 +9,9 @@ type Props = {
   onShare?: (id: string) => void;
 };
 
-export default function AnnouncementCard({ item, onReadMore, onShare }: Props) {
+export default function AnnoucementCard({ item, onReadMore, onShare }: Props) {
   const date = new Date(item.createdAtISO).toLocaleString(undefined, {
-    month: 'long', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
+    month: 'long', day: '2-digit', year: 'numeric',
   });
 
   const isUnread = !item.read;
@@ -34,7 +34,7 @@ export default function AnnouncementCard({ item, onReadMore, onShare }: Props) {
           overflow: 'hidden',
           backgroundColor: '#fff',
           padding: 16,
-          opacity: item.read ? 0.75 : 1,
+          opacity: item.read ? 0.85 : 1,
           borderLeftWidth: isUnread ? 4 : 0,
           borderLeftColor: isUnread ? '#3b82f6' : 'transparent',
         }}
@@ -72,9 +72,12 @@ export default function AnnouncementCard({ item, onReadMore, onShare }: Props) {
           />
         ) : null}
 
-        <Text variant="bodyMedium" style={{ color: '#4c669a', marginTop: 8 }}>
-          {item.body}
-        </Text>
+        {/* EXCERPT ONLY (no full body) */}
+        {item.body ? (
+          <Text variant="bodyMedium" style={{ color: '#4c669a', marginTop: 8 }} numberOfLines={2}>
+            {excerpt(item.body)}
+          </Text>
+        ) : null}
 
         <View
           style={{
@@ -89,7 +92,7 @@ export default function AnnouncementCard({ item, onReadMore, onShare }: Props) {
           <Button onPress={() => onReadMore?.(item.id)} textColor="#2563eb" labelStyle={{ fontWeight: '700' }}>
             Read More
           </Button>
-          <Button onPress={() => onShare?.(item.id)} textColor="#4c669a" icon="share-variant" >
+          <Button onPress={() => onShare?.(item.id)} textColor="#4c669a" icon="share-variant">
             Share
           </Button>
         </View>
@@ -109,9 +112,14 @@ function labelCategory(c: Announcement['category']) {
 
 function categoryColor(c: Announcement['category']) {
   switch (c) {
-    case 'maintenance': return { bg: '#DBEAFE', fg: '#2563EB' }; 
+    case 'maintenance': return { bg: '#DBEAFE', fg: '#2563EB' };
     case 'events':      return { bg: '#DCFCE7', fg: '#166534' };
-    case 'notices':     return { bg: '#FFE4E6', fg: '#991B1B' };
-    case 'security':    return { bg: '#FDE68A', fg: '#92400E' };
+    case 'notices':     return { bg: '#FDE68A', fg: '#92400E' };
+    case 'security':    return { bg: '#FFE4E6', fg: '#991B1B' };
   }
+}
+
+function excerpt(body: string, max = 140) {
+  const clean = body.replace(/\s+/g, ' ').trim();
+  return clean.length > max ? clean.slice(0, max - 1) + '…' : clean;
 }
