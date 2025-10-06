@@ -1,13 +1,17 @@
 import React from 'react';
 import { Image, View } from 'react-native';
-import { IconButton, Text } from 'react-native-paper';
+import { Badge, IconButton, Text } from 'react-native-paper';
 
 type Props = {
   name: string;
   avatarUrl?: string;
+  onBellPress?: () => void;        // ← add this
+  unreadCount?: number;            // ← and this (optional)
 };
 
-export default function TopAppBar({ name, avatarUrl }: Props) {
+export default function TopAppBar({ name, avatarUrl, onBellPress, unreadCount = 0 }: Props) {
+  const hasUnread = (unreadCount ?? 0) > 0;
+
   return (
     <View
       style={{
@@ -39,7 +43,17 @@ export default function TopAppBar({ name, avatarUrl }: Props) {
         </Text>
       </View>
 
-      <IconButton icon="bell-outline" onPress={() => {}} />
+      <View style={{ position: 'relative' }}>
+        <IconButton icon="bell-outline" onPress={onBellPress} />
+        {hasUnread && (
+          <Badge
+            style={{ position: 'absolute', top: 2, right: 2 }}
+            size={12}
+          >
+            {/* keep small or empty for a red dot; or show count */}
+          </Badge>
+        )}
+      </View>
     </View>
   );
 }

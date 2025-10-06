@@ -4,5 +4,5 @@ import FacilityScreen from '../src/features/facilities/routes/FacilityScreen';
 
 export default function FacilitiesPage() {
   const router = useRouter();
-  return <FacilityScreen onBack={() => router.back()} />;
+  return <FacilityScreen  />;
 }

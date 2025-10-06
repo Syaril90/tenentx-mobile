@@ -71,7 +71,7 @@ export default function HomeScreen() {
         }}
         style={{ backgroundColor: ds.color.bg }}
       >
-        <TopAppBar name={me?.name ?? 'User'} avatarUrl={me?.avatarUrl} />
+        <TopAppBar name={me?.name ?? 'User'} avatarUrl={me?.avatarUrl} onBellPress={() => router.push('/notifications')} unreadCount={0} />
 
         <UnitSummaryCard unit={uiUnit} balance={uiBalance} onViewDetails={() => {}} />
 
